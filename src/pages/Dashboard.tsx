@@ -1,8 +1,8 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, BarChart3, Users, Target, TrendingUp } from "lucide-react";
+import WhatsAppChat from "@/components/WhatsAppChat";
 
 const Dashboard = () => {
   // Mock data for demonstration
@@ -165,6 +165,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* WhatsApp Chat Widget */}
+      <WhatsAppChat />
     </div>
   );
 };
