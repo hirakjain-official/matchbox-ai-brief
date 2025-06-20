@@ -5,13 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mic, FileText, Upload, ArrowLeft, Send } from "lucide-react";
+import { Mic, FileText, Upload, ArrowLeft, Send, Square, Play, RotateCcw } from "lucide-react";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 
 const CreateCampaign = () => {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [campaignTitle, setCampaignTitle] = useState("");
   const [textDescription, setTextDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const {
+    isRecording,
+    audioBlob,
+    duration,
+    startRecording,
+    stopRecording,
+    resetRecording
+  } = useVoiceRecorder();
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +38,7 @@ const CreateCampaign = () => {
       title: campaignTitle,
       method: selectedMethod,
       description: textDescription,
+      voiceRecording: audioBlob ? "Voice recording attached" : null,
       timestamp: new Date().toISOString()
     });
     
@@ -33,7 +50,15 @@ const CreateCampaign = () => {
       setCampaignTitle("");
       setTextDescription("");
       setSelectedMethod(null);
+      resetRecording();
     }, 1000);
+  };
+
+  const playRecording = () => {
+    if (audioBlob) {
+      const audio = new Audio(URL.createObjectURL(audioBlob));
+      audio.play();
+    }
   };
 
   return (
@@ -145,11 +170,74 @@ const CreateCampaign = () => {
               <div className="bg-black/5 p-8 rounded-lg">
                 <h3 className="text-xl font-bold text-black mb-4">Record Your Voice Note</h3>
                 <div className="text-center py-12">
-                  <Mic className="w-16 h-16 text-[#FF6B35] mx-auto mb-4" />
-                  <Button className="bg-[#FF6B35] hover:bg-[#FF6B35]/90 text-white">
-                    Start Recording
-                  </Button>
-                  <p className="text-black/70 mt-4">Click to start recording your campaign brief</p>
+                  {!audioBlob ? (
+                    <>
+                      <Mic className={`w-16 h-16 mx-auto mb-4 ${isRecording ? 'text-red-500 animate-pulse' : 'text-[#FF6B35]'}`} />
+                      {isRecording && (
+                        <div className="mb-4">
+                          <div className="text-2xl font-mono text-red-500 mb-2">
+                            {formatDuration(duration)}
+                          </div>
+                          <div className="text-sm text-black/70">Recording in progress...</div>
+                        </div>
+                      )}
+                      <div className="flex gap-4 justify-center">
+                        {!isRecording ? (
+                          <Button 
+                            type="button"
+                            onClick={startRecording}
+                            className="bg-[#FF6B35] hover:bg-[#FF6B35]/90 text-white"
+                          >
+                            <Mic className="mr-2 w-4 h-4" />
+                            Start Recording
+                          </Button>
+                        ) : (
+                          <Button 
+                            type="button"
+                            onClick={stopRecording}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                          >
+                            <Square className="mr-2 w-4 h-4" />
+                            Stop Recording
+                          </Button>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mb-6">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                          <Mic className="w-8 h-8 text-green-600" />
+                        </div>
+                        <div className="text-lg font-medium text-black mb-2">
+                          Recording Complete ({formatDuration(duration)})
+                        </div>
+                        <div className="text-sm text-black/70">
+                          Your voice note has been recorded successfully
+                        </div>
+                      </div>
+                      <div className="flex gap-4 justify-center">
+                        <Button 
+                          type="button"
+                          onClick={playRecording}
+                          variant="outline"
+                          className="border-black text-black hover:bg-black hover:text-white"
+                        >
+                          <Play className="mr-2 w-4 h-4" />
+                          Play Recording
+                        </Button>
+                        <Button 
+                          type="button"
+                          onClick={resetRecording}
+                          variant="outline"
+                          className="border-[#FF6B35] text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white"
+                        >
+                          <RotateCcw className="mr-2 w-4 h-4" />
+                          Record Again
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -186,7 +274,7 @@ const CreateCampaign = () => {
             )}
 
             {/* Submit Button */}
-            {selectedMethod && (
+            {selectedMethod && (selectedMethod !== "voice" || audioBlob || textDescription) && (
               <div className="text-center pt-8">
                 <Button
                   type="submit"
