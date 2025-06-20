@@ -1,11 +1,11 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mic, FileText, Upload, ArrowLeft, Send, Square, Play, RotateCcw } from "lucide-react";
+import { Mic, FileText, Upload, ArrowLeft, Send, Square, Play, RotateCcw, File, X } from "lucide-react";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 
 const CreateCampaign = () => {
@@ -13,6 +13,8 @@ const CreateCampaign = () => {
   const [campaignTitle, setCampaignTitle] = useState("");
   const [textDescription, setTextDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const {
     isRecording,
@@ -29,6 +31,51 @@ const CreateCampaign = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain'
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please select a valid file type (PDF, DOC, DOCX, or TXT)');
+        return;
+      }
+
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
+      }
+
+      setUploadedFile(file);
+    }
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -39,6 +86,11 @@ const CreateCampaign = () => {
       method: selectedMethod,
       description: textDescription,
       voiceRecording: audioBlob ? "Voice recording attached" : null,
+      uploadedFile: uploadedFile ? {
+        name: uploadedFile.name,
+        size: uploadedFile.size,
+        type: uploadedFile.type
+      } : null,
       timestamp: new Date().toISOString()
     });
     
@@ -50,7 +102,11 @@ const CreateCampaign = () => {
       setCampaignTitle("");
       setTextDescription("");
       setSelectedMethod(null);
+      setUploadedFile(null);
       resetRecording();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }, 1000);
   };
 
@@ -261,20 +317,68 @@ const CreateCampaign = () => {
             {selectedMethod === "document" && (
               <div className="bg-black/5 p-8 rounded-lg">
                 <h3 className="text-xl font-bold text-black mb-4">Upload Document</h3>
-                <div className="text-center py-12 border-2 border-dashed border-black/20 rounded-lg">
-                  <Upload className="w-16 h-16 text-[#FF6B35] mx-auto mb-4" />
-                  <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
-                    Choose File
-                  </Button>
-                  <p className="text-black/70 mt-4">
-                    Upload PDF, DOC, or TXT files (Max 10MB)
-                  </p>
-                </div>
+                
+                {!uploadedFile ? (
+                  <div className="text-center py-12 border-2 border-dashed border-black/20 rounded-lg">
+                    <Upload className="w-16 h-16 text-[#FF6B35] mx-auto mb-4" />
+                    <Button 
+                      type="button"
+                      onClick={handleFileSelect}
+                      variant="outline" 
+                      className="border-black text-black hover:bg-black hover:text-white"
+                    >
+                      Choose File
+                    </Button>
+                    <p className="text-black/70 mt-4">
+                      Upload PDF, DOC, DOCX, or TXT files (Max 10MB)
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx,.txt"
+                      className="hidden"
+                    />
+                  </div>
+                ) : (
+                  <div className="border-2 border-green-200 bg-green-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                          <File className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-black">{uploadedFile.name}</p>
+                          <p className="text-sm text-black/70">{formatFileSize(uploadedFile.size)}</p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        onClick={removeFile}
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-green-200">
+                      <Button
+                        type="button"
+                        onClick={handleFileSelect}
+                        variant="outline"
+                        className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
+                      >
+                        Choose Different File
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Submit Button */}
-            {selectedMethod && (selectedMethod !== "voice" || audioBlob || textDescription) && (
+            {selectedMethod && (selectedMethod !== "voice" || audioBlob || textDescription || uploadedFile) && (
               <div className="text-center pt-8">
                 <Button
                   type="submit"
