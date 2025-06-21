@@ -1,7 +1,10 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, BarChart3, Users, Target, TrendingUp } from "lucide-react";
+import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import WhatsAppChat from "@/components/WhatsAppChat";
 
 const Dashboard = () => {
@@ -20,20 +23,21 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-black/10 bg-white">
+      <header className="border-b border-border bg-background">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-black">MATCHBOX AI</h1>
+            <Logo />
             <div className="flex gap-4">
+              <ThemeToggle />
               <Link to="/create-campaign">
                 <Button className="bg-[#FF6B35] hover:bg-[#FF6B35]/90 text-white">
                   <Plus className="w-4 h-4 mr-2" />
                   New Campaign
                 </Button>
               </Link>
-              <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
+              <Button variant="outline" className="border-border text-foreground hover:bg-accent">
                 Profile
               </Button>
             </div>
@@ -45,8 +49,8 @@ const Dashboard = () => {
       <div className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-black mb-2">Welcome back!</h2>
-          <p className="text-black/70">Here's what's happening with your campaigns today.</p>
+          <h2 className="text-3xl font-bold text-foreground mb-2">Welcome back!</h2>
+          <p className="text-muted-foreground">Here's what's happening with your campaigns today.</p>
         </div>
 
         {/* Stats Grid */}
@@ -54,15 +58,15 @@ const Dashboard = () => {
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="border-black/20">
+              <Card key={index} className="border-border">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-black/70 text-sm font-medium">{stat.title}</p>
-                      <p className="text-2xl font-bold text-black">{stat.value}</p>
+                      <p className="text-muted-foreground text-sm font-medium">{stat.title}</p>
+                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
                       <p className="text-[#FF6B35] text-sm font-medium">{stat.change}</p>
                     </div>
-                    <Icon className="w-8 h-8 text-black/40" />
+                    <Icon className="w-8 h-8 text-muted-foreground" />
                   </div>
                 </CardContent>
               </Card>
@@ -74,32 +78,32 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Campaigns */}
           <div className="lg:col-span-2">
-            <Card className="border-black/20">
+            <Card className="border-border">
               <CardHeader>
-                <CardTitle className="text-black">Recent Campaigns</CardTitle>
+                <CardTitle className="text-foreground">Recent Campaigns</CardTitle>
                 <CardDescription>Manage your current and past campaigns</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {campaigns.map((campaign) => (
-                    <div key={campaign.id} className="flex items-center justify-between p-4 border border-black/10 rounded-lg">
+                    <div key={campaign.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
                       <div>
-                        <h3 className="font-semibold text-black">{campaign.title}</h3>
-                        <p className="text-sm text-black/70">
+                        <h3 className="font-semibold text-foreground">{campaign.title}</h3>
+                        <p className="text-sm text-muted-foreground">
                           {campaign.influencers} influencers • {campaign.reach} reach
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={`px-3 py-1 text-xs font-medium rounded-full ${
                           campaign.status === "Active" 
-                            ? "bg-green-100 text-green-800" 
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" 
                             : campaign.status === "Draft"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-gray-100 text-gray-800"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                         }`}>
                           {campaign.status}
                         </span>
-                        <Button variant="outline" size="sm" className="border-black/20 text-black hover:bg-black hover:text-white">
+                        <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-accent">
                           View
                         </Button>
                       </div>
@@ -107,9 +111,11 @@ const Dashboard = () => {
                   ))}
                 </div>
                 <div className="mt-6 text-center">
-                  <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
-                    View All Campaigns
-                  </Button>
+                  <Link to="/campaigns">
+                    <Button variant="outline" className="border-border text-foreground hover:bg-accent">
+                      View All Campaigns
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -117,9 +123,9 @@ const Dashboard = () => {
 
           {/* Quick Actions */}
           <div>
-            <Card className="border-black/20 mb-6">
+            <Card className="border-border mb-6">
               <CardHeader>
-                <CardTitle className="text-black">Quick Actions</CardTitle>
+                <CardTitle className="text-foreground">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link to="/create-campaign">
@@ -128,35 +134,37 @@ const Dashboard = () => {
                     Create New Campaign
                   </Button>
                 </Link>
-                <Button variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white justify-start">
+                <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent justify-start">
                   <Users className="w-4 h-4 mr-2" />
                   Browse Influencers
                 </Button>
-                <Button variant="outline" className="w-full border-black text-black hover:bg-black hover:text-white justify-start">
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  View Analytics
-                </Button>
+                <Link to="/analytics">
+                  <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent justify-start">
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    View Analytics
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
             {/* Performance Overview */}
-            <Card className="border-black/20">
+            <Card className="border-border">
               <CardHeader>
-                <CardTitle className="text-black">This Month</CardTitle>
+                <CardTitle className="text-foreground">This Month</CardTitle>
                 <CardDescription>Performance overview</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-black/70">Campaigns Created</span>
-                    <span className="font-semibold text-black">8</span>
+                    <span className="text-muted-foreground">Campaigns Created</span>
+                    <span className="font-semibold text-foreground">8</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-black/70">Total Reach</span>
-                    <span className="font-semibold text-black">890K</span>
+                    <span className="text-muted-foreground">Total Reach</span>
+                    <span className="font-semibold text-foreground">890K</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-black/70">Avg. Engagement</span>
+                    <span className="text-muted-foreground">Avg. Engagement</span>
                     <span className="font-semibold text-[#FF6B35]">4.8%</span>
                   </div>
                 </div>

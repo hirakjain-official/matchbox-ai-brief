@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
+import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,15 +29,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b border-black/10 bg-white">
+      <header className="border-b border-border bg-background">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 text-black hover:text-[#FF6B35] transition-colors">
+            <Link to="/" className="flex items-center gap-2 text-foreground hover:text-[#FF6B35] transition-colors">
               <ArrowLeft className="w-5 h-5" />
-              <span className="text-2xl font-bold">MATCHBOX AI</span>
+              <Logo />
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -44,14 +47,14 @@ const Login = () => {
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-black mb-2">Welcome Back</h1>
-            <p className="text-black/70">Sign in to your MATCHBOX AI account</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
+            <p className="text-muted-foreground">Sign in to your MATCHBOX AI account</p>
           </div>
 
-          <div className="bg-white p-8 border border-black/20 rounded-lg shadow-lg">
+          <div className="bg-card p-8 border border-border rounded-lg shadow-lg">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="email" className="text-black font-medium">
+                <Label htmlFor="email" className="text-foreground font-medium">
                   Email Address
                 </Label>
                 <Input
@@ -60,13 +63,13 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="mt-1 border-black/20 focus:border-[#FF6B35] focus:ring-[#FF6B35]"
+                  className="mt-1 border-border focus:border-[#FF6B35] focus:ring-[#FF6B35]"
                   placeholder="Enter your email"
                 />
               </div>
 
               <div>
-                <Label htmlFor="password" className="text-black font-medium">
+                <Label htmlFor="password" className="text-foreground font-medium">
                   Password
                 </Label>
                 <Input
@@ -75,7 +78,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="mt-1 border-black/20 focus:border-[#FF6B35] focus:ring-[#FF6B35]"
+                  className="mt-1 border-border focus:border-[#FF6B35] focus:ring-[#FF6B35]"
                   placeholder="Enter your password"
                 />
               </div>
@@ -90,7 +93,7 @@ const Login = () => {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-black/70">
+              <p className="text-muted-foreground">
                 Don't have an account?{" "}
                 <Link to="/signup" className="text-[#FF6B35] hover:underline font-medium">
                   Sign up here
