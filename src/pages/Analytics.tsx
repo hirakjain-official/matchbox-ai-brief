@@ -6,6 +6,8 @@ import { ArrowLeft, BarChart3, TrendingUp, Users, Eye } from "lucide-react";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import WhatsAppChat from "@/components/WhatsAppChat";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Area, AreaChart } from "recharts";
 
 const Analytics = () => {
   const analyticsData = [
@@ -14,6 +16,46 @@ const Analytics = () => {
     { title: "Reach", value: "890K", change: "+15%", icon: TrendingUp },
     { title: "Active Users", value: "156K", change: "+8%", icon: Users },
   ];
+
+  const performanceData = [
+    { month: "Jan", impressions: 120000, engagement: 2400, reach: 45000 },
+    { month: "Feb", impressions: 190000, engagement: 3200, reach: 62000 },
+    { month: "Mar", impressions: 300000, engagement: 4100, reach: 78000 },
+    { month: "Apr", impressions: 280000, engagement: 3800, reach: 71000 },
+    { month: "May", impressions: 420000, engagement: 5200, reach: 89000 },
+    { month: "Jun", impressions: 380000, engagement: 4800, reach: 85000 },
+  ];
+
+  const platformData = [
+    { name: "Facebook", value: 35, color: "#3b82f6" },
+    { name: "Instagram", value: 28, color: "#ef4444" },
+    { name: "Twitter", value: 20, color: "#10b981" },
+    { name: "LinkedIn", value: 12, color: "#f59e0b" },
+    { name: "Others", value: 5, color: "#8b5cf6" },
+  ];
+
+  const campaignData = [
+    { campaign: "Summer Sale", clicks: 4800, conversions: 240, ctr: 5.0 },
+    { campaign: "Brand Awareness", clicks: 3200, conversions: 128, ctr: 4.0 },
+    { campaign: "Product Launch", clicks: 5600, conversions: 336, ctr: 6.0 },
+    { campaign: "Holiday Special", clicks: 4200, conversions: 210, ctr: 5.0 },
+    { campaign: "Retargeting", clicks: 2800, conversions: 168, ctr: 6.0 },
+  ];
+
+  const chartConfig = {
+    impressions: {
+      label: "Impressions",
+      color: "hsl(var(--primary))",
+    },
+    engagement: {
+      label: "Engagement",
+      color: "#FF6B35",
+    },
+    reach: {
+      label: "Reach",
+      color: "hsl(var(--muted-foreground))",
+    },
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,28 +109,95 @@ const Analytics = () => {
           })}
         </div>
 
-        {/* Analytics Charts Placeholder */}
+        {/* Interactive Charts */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">Campaign Performance Over Time</CardTitle>
+              <CardDescription>Monthly performance metrics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-64">
+                <AreaChart data={performanceData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="impressions" stackId="1" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} />
+                  <Area type="monotone" dataKey="reach" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+                </AreaChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">Engagement by Platform</CardTitle>
+              <CardDescription>Distribution across social platforms</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={platformData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {platformData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-8">
           <Card className="border-border">
             <CardHeader>
-              <CardTitle className="text-foreground">Campaign Performance</CardTitle>
-              <CardDescription>Performance metrics over time</CardDescription>
+              <CardTitle className="text-foreground">Campaign Comparison</CardTitle>
+              <CardDescription>Click-through rates by campaign</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Chart visualization would go here</p>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={campaignData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="campaign" angle={-45} textAnchor="end" height={60} />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="clicks" fill="hsl(var(--primary))" />
+                    <Bar dataKey="conversions" fill="#FF6B35" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-border">
             <CardHeader>
-              <CardTitle className="text-foreground">Engagement Breakdown</CardTitle>
-              <CardDescription>Engagement by platform</CardDescription>
+              <CardTitle className="text-foreground">Monthly Engagement Trend</CardTitle>
+              <CardDescription>Engagement growth over time</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Chart visualization would go here</p>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line type="monotone" dataKey="engagement" stroke="#FF6B35" strokeWidth={3} dot={{ fill: '#FF6B35', strokeWidth: 2, r: 4 }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
